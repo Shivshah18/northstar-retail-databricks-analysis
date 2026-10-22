@@ -1,0 +1,2137 @@
+{
+  "datasets": [
+    {
+      "name": "5e8416d3",
+      "displayName": "KPIs",
+      "queryLines": [
+        "SELECT\r\n",
+        "  SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution,\r\n",
+        "  SUM(SoldQty) AS SoldQty, SUM(ReturnedQty) AS ReturnedQty,\r\n",
+        "  ROUND(SUM(MerchandiseSales),2) AS MerchandiseSales,\r\n",
+        "  ROUND(SUM(Refund),2) AS Refund,\r\n",
+        "  ROUND(SUM(ShipRev),2) AS ShipRev,\r\n",
+        "  ROUND(SUM(ShipCost),2) AS ShipCost,\r\n",
+        "  ROUND(SUM(NetCOGS),2) AS NetCOGS,\r\n",
+        "  ROUND(SUM(MerchandiseSales)/NULLIF(\r\n",
+        "    SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END),0),2) AS AOV,\r\n",
+        "  ROUND(100.0*SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END)/NULLIF(\r\n",
+        "    SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END),0),4) AS ReturnOrderPct,\r\n",
+        "  ROUND(100.0*SUM(Contribution)/NULLIF(SUM(NetMerchandiseSales),0),4) AS ContributionPct\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province);\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6f881820",
+      "displayName": "Monthly",
+      "queryLines": [
+        "SELECT CAST(date_trunc('MONTH',OrderDate) AS DATE) AS MonthStart,\r\n",
+        " SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        "GROUP BY 1 ORDER BY MonthStart;\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "df49a875",
+      "displayName": "Categories",
+      "queryLines": [
+        "SELECT Category,\r\n",
+        "  SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution,\r\n",
+        "  ROUND(100.0*SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END)/NULLIF(\r\n",
+        "    SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END),0),2) AS ReturnOrderPct\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        "GROUP BY Category\r\n",
+        "ORDER BY NetMerchandiseSales DESC;\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2026-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a6b41161",
+      "displayName": "Channels",
+      "queryLines": [
+        "SELECT Channel,\r\n",
+        " SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution,\r\n",
+        " ROUND(SUM(ShipRev),2) AS ShippingRevenue,\r\n",
+        " ROUND(SUM(ShipCost),2) AS ShippingCost,\r\n",
+        " ROUND(SUM(ShipRev-ShipCost),2) AS ShippingGap\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        "GROUP BY Channel ORDER BY Channel;\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "87014b8b",
+      "displayName": "Returns",
+      "queryLines": [
+        "SELECT ReturnReason,\r\n",
+        "COUNT(*) AS ReturnedOrders, SUM(ReturnedQty) AS ReturnedUnits,\r\n",
+        "ROUND(SUM(Refund),2) AS Refund\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        "AND ReturnedQty>0\r\n",
+        "GROUP BY ReturnReason \r\n",
+        "ORDER BY ReturnedOrders DESC;"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ca432918",
+      "displayName": "Products",
+      "queryLines": [
+        "WITH p AS (\r\n",
+        " SELECT ProductID,Category,\r\n",
+        "   SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        " GROUP BY ProductID,Category\r\n",
+        ")\r\n",
+        "SELECT *, DENSE_RANK() OVER (\r\n",
+        " PARTITION BY Category ORDER BY Contribution DESC) AS CategoryContributionRank\r\n",
+        "FROM p ORDER BY Category,CategoryContributionRank,ProductID;\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "148909a8",
+      "displayName": "Regions",
+      "queryLines": [
+        "SELECT Province, SUM(CASE WHEN Status='Completed' THEN 1 ELSE 0 END) AS CompletedOrders,\r\n",
+        "  SUM(CASE WHEN ReturnedQty>0 THEN 1 ELSE 0 END) AS ReturnedOrders,\r\n",
+        "  ROUND(SUM(NetMerchandiseSales),2) AS NetMerchandiseSales,\r\n",
+        "  ROUND(SUM(Contribution),2) AS Contribution\r\n",
+        "FROM workspace.northstar_project2.vw_order_finance\r\n",
+        "WHERE OrderDate BETWEEN CAST(:start_date AS DATE) AND CAST(:end_date AS DATE)\r\n",
+        "  AND (:channel = 'ALL' OR Channel = :channel)\r\n",
+        "  AND (:province = 'ALL' OR Province = :province)\r\n",
+        "GROUP BY Province ORDER BY Province;\r\n"
+      ],
+      "parameters": [
+        {
+          "displayName": "start_date",
+          "keyword": "start_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-01-01T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "end_date",
+          "keyword": "end_date",
+          "dataType": "DATE",
+          "defaultSelection": {
+            "values": {
+              "dataType": "DATE",
+              "values": [
+                {
+                  "value": "2025-12-31T00:00:00.000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "channel",
+          "keyword": "channel",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "province",
+          "keyword": "province",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "ALL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "873a472c",
+      "displayName": "Channel choices",
+      "queryLines": [
+        "SELECT * FROM (VALUES ('ALL'),('ONLINE'),('STORE')) AS choices(ChannelChoice);\r\n"
+      ]
+    },
+    {
+      "name": "5dabadda",
+      "displayName": "Province choices",
+      "queryLines": [
+        "SELECT * FROM (VALUES ('ALL'),('ON'),('BC'),('AB'),('QC')) AS choices(ProvinceChoice);\r\n"
+      ]
+    }
+  ],
+  "relationshipGraphs": [
+    {
+      "sources": [
+        {
+          "name": "KPIs",
+          "datasetName": "5e8416d3"
+        },
+        {
+          "name": "Monthly",
+          "datasetName": "6f881820"
+        },
+        {
+          "name": "Categories",
+          "datasetName": "df49a875"
+        },
+        {
+          "name": "Channels",
+          "datasetName": "a6b41161"
+        },
+        {
+          "name": "Returns",
+          "datasetName": "87014b8b"
+        },
+        {
+          "name": "Products",
+          "datasetName": "ca432918"
+        },
+        {
+          "name": "Regions",
+          "datasetName": "148909a8"
+        },
+        {
+          "name": "Channel_choices",
+          "datasetName": "873a472c"
+        },
+        {
+          "name": "Province_choices",
+          "datasetName": "5dabadda"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "3a46d608",
+      "displayName": "Executive overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "net-merchandise-sales-cad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "sum(KPIs__NetMerchandiseSales)",
+                      "expression": "SUM(`KPIs`.`NetMerchandiseSales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Net merchandise sales CAD",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(KPIs__NetMerchandiseSales)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "107a9965",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "sum(KPIs__Contribution)",
+                      "expression": "SUM(`KPIs`.`Contribution`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Contribution CAD",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(KPIs__Contribution)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "a96f10f2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "sum(KPIs__ReturnOrderPct)",
+                      "expression": "SUM(`KPIs`.`ReturnOrderPct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Return order percentage",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(KPIs__ReturnOrderPct)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "bf3c1baa",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "sum(KPIs__CompletedOrders)",
+                      "expression": "SUM(`KPIs`.`CompletedOrders`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Completed Orders",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(KPIs__CompletedOrders)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "b44a398e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "monthly(Monthly__MonthStart)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Monthly`.`MonthStart`)"
+                    },
+                    {
+                      "name": "sum(Monthly__NetMerchandiseSales)",
+                      "expression": "SUM(`Monthly`.`NetMerchandiseSales`)"
+                    },
+                    {
+                      "name": "sum(Monthly__Contribution)",
+                      "expression": "SUM(`Monthly`.`Contribution`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(Monthly__MonthStart)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "sum(Monthly__NetMerchandiseSales)"
+                    },
+                    {
+                      "fieldName": "sum(Monthly__Contribution)"
+                    }
+                  ]
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c67fdaa5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Categories__Category",
+                      "expression": "`Categories`.`Category`"
+                    },
+                    {
+                      "name": "sum(Categories__NetMerchandiseSales)",
+                      "expression": "SUM(`Categories`.`NetMerchandiseSales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Categories__Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Categories__NetMerchandiseSales)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "605c0fcb",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family: Montserrat;font-size: 24px;color: #FFFFFF;\">Northstar synthetic retail analysis.</span><br><br><span style=\"font-family:Inter;font-size:14px\">2025 order cohort. Currency CAD, excluding tax. </span><br><span style=\"font-family:Inter;font-size:14px\">Refunds are assigned to original order dates and can include returns received in January 2026. </span><br><span style=\"font-family:Inter;font-size:14px\">Contribution excludes payroll, rent, tax, and return processing.</span></span>"
+              ],
+              "verticalAlign": "VERTICAL_ALIGN_CENTER"
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#4E7292"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 3
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "338af5bc",
+      "displayName": "Returns and products",
+      "layout": [
+        {
+          "widget": {
+            "name": "returned-orders-completed-orders",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Categories__Category",
+                      "expression": "`Categories`.`Category`"
+                    },
+                    {
+                      "name": "max(Categories__ReturnOrderPct)",
+                      "expression": "MAX(`Categories`.`ReturnOrderPct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Returned orders as % of completed orders",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Categories__Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "max(Categories__ReturnOrderPct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "ee6ed902",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Returns__ReturnReason",
+                      "expression": "`Returns`.`ReturnReason`"
+                    },
+                    {
+                      "name": "sum(Returns__Refund)",
+                      "expression": "SUM(`Returns`.`Refund`)"
+                    },
+                    {
+                      "name": "sum(Returns__ReturnedOrders)",
+                      "expression": "SUM(`Returns`.`ReturnedOrders`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": false
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Returns__ReturnReason",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Returns__ReturnedOrders)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Returns__ReturnReason",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Change of mind",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 9
+                        }
+                      },
+                      {
+                        "value": "Damage",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      },
+                      {
+                        "value": "Size",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 6
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "sum(Returns__Refund)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "3e135267",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Products__ProductID",
+                      "expression": "`Products`.`ProductID`"
+                    },
+                    {
+                      "name": "Products__Category",
+                      "expression": "`Products`.`Category`"
+                    },
+                    {
+                      "name": "Products__CompletedOrders",
+                      "expression": "`Products`.`CompletedOrders`"
+                    },
+                    {
+                      "name": "Products__ReturnedOrders",
+                      "expression": "`Products`.`ReturnedOrders`"
+                    },
+                    {
+                      "name": "Products__NetMerchandiseSales",
+                      "expression": "`Products`.`NetMerchandiseSales`"
+                    },
+                    {
+                      "name": "Products__Contribution",
+                      "expression": "`Products`.`Contribution`"
+                    },
+                    {
+                      "name": "Products__CategoryContributionRank",
+                      "expression": "`Products`.`CategoryContributionRank`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Products__ProductID",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__Category",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__CompletedOrders",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__ReturnedOrders",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__NetMerchandiseSales",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__Contribution",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  },
+                  {
+                    "fieldName": "Products__CategoryContributionRank",
+                    "contentAlignment": "center",
+                    "headerAlignment": "center"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 12,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "2eb2f70e",
+      "displayName": "Channel and Region",
+      "layout": [
+        {
+          "widget": {
+            "name": "e376ab27",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Channels__Channel",
+                      "expression": "`Channels`.`Channel`"
+                    },
+                    {
+                      "name": "Channels__ShippingRevenue",
+                      "expression": "`Channels`.`ShippingRevenue`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Channels__Channel",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "Channels__ShippingRevenue",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "229b1765",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Channels__Channel",
+                      "expression": "`Channels`.`Channel`"
+                    },
+                    {
+                      "name": "Channels__ShippingCost",
+                      "expression": "`Channels`.`ShippingCost`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Channels__Channel",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "Channels__ShippingCost",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "02aced57",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Channels__Channel",
+                      "expression": "`Channels`.`Channel`"
+                    },
+                    {
+                      "name": "Channels__NetMerchandiseSales",
+                      "expression": "`Channels`.`NetMerchandiseSales`"
+                    },
+                    {
+                      "name": "Channels__Contribution",
+                      "expression": "`Channels`.`Contribution`"
+                    },
+                    {
+                      "name": "Channels__ShippingRevenue",
+                      "expression": "`Channels`.`ShippingRevenue`"
+                    },
+                    {
+                      "name": "Channels__ShippingCost",
+                      "expression": "`Channels`.`ShippingCost`"
+                    },
+                    {
+                      "name": "Channels__ShippingGap",
+                      "expression": "`Channels`.`ShippingGap`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Channels__Channel"
+                  },
+                  {
+                    "fieldName": "Channels__NetMerchandiseSales"
+                  },
+                  {
+                    "fieldName": "Channels__Contribution"
+                  },
+                  {
+                    "fieldName": "Channels__ShippingRevenue"
+                  },
+                  {
+                    "fieldName": "Channels__ShippingCost"
+                  },
+                  {
+                    "fieldName": "Channels__ShippingGap"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "47af3f52",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Regions__Province",
+                      "expression": "`Regions`.`Province`"
+                    },
+                    {
+                      "name": "sum(Regions__NetMerchandiseSales)",
+                      "expression": "SUM(`Regions`.`NetMerchandiseSales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Regions__Province",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Regions__NetMerchandiseSales)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Regions__Province",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "BC",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 10
+                        }
+                      },
+                      {
+                        "value": "ON",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 6
+                        }
+                      },
+                      {
+                        "value": "QC",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 5
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "9946370f",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "start-date",
+            "queries": [
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_start_date",
+                "query": {
+                  "datasetName": "5e8416d3",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_start_date",
+                "query": {
+                  "datasetName": "6f881820",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_start_date",
+                "query": {
+                  "datasetName": "df49a875",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_start_date",
+                "query": {
+                  "datasetName": "a6b41161",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_start_date",
+                "query": {
+                  "datasetName": "87014b8b",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_start_date",
+                "query": {
+                  "datasetName": "ca432918",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_start_date",
+                "query": {
+                  "datasetName": "148909a8",
+                  "parameters": [
+                    {
+                      "name": "start_date",
+                      "keyword": "start_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Start Date",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-date-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_start_date"
+                  },
+                  {
+                    "parameterName": "start_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_start_date"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "end-date-1",
+            "queries": [
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_end_date",
+                "query": {
+                  "datasetName": "5e8416d3",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_end_date",
+                "query": {
+                  "datasetName": "6f881820",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_end_date",
+                "query": {
+                  "datasetName": "df49a875",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_end_date",
+                "query": {
+                  "datasetName": "a6b41161",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_end_date",
+                "query": {
+                  "datasetName": "87014b8b",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_end_date",
+                "query": {
+                  "datasetName": "ca432918",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_end_date",
+                "query": {
+                  "datasetName": "148909a8",
+                  "parameters": [
+                    {
+                      "name": "end_date",
+                      "keyword": "end_date"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "End Date",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-date-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_end_date"
+                  },
+                  {
+                    "parameterName": "end_date",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_end_date"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "channel",
+            "queries": [
+              {
+                "name": "dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87e76e1f03b53836f4fb76c1a3_ChannelChoice",
+                "query": {
+                  "datasetName": "873a472c",
+                  "fields": [
+                    {
+                      "name": "ChannelChoice",
+                      "expression": "`ChannelChoice`"
+                    },
+                    {
+                      "name": "ChannelChoice_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_channel",
+                "query": {
+                  "datasetName": "5e8416d3",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_channel",
+                "query": {
+                  "datasetName": "6f881820",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_channel",
+                "query": {
+                  "datasetName": "df49a875",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_channel",
+                "query": {
+                  "datasetName": "a6b41161",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_channel",
+                "query": {
+                  "datasetName": "87014b8b",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_channel",
+                "query": {
+                  "datasetName": "ca432918",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_channel",
+                "query": {
+                  "datasetName": "148909a8",
+                  "parameters": [
+                    {
+                      "name": "channel",
+                      "keyword": "channel"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "disallowAll": false,
+              "selection": {
+                "defaultSelection": {
+                  "values": {
+                    "dataType": "STRING",
+                    "values": [
+                      {
+                        "value": "ALL"
+                      }
+                    ]
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Channel",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "ChannelChoice",
+                    "queryName": "dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87e76e1f03b53836f4fb76c1a3_ChannelChoice"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_channel"
+                  },
+                  {
+                    "parameterName": "channel",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_channel"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "province",
+            "queries": [
+              {
+                "name": "dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87fa631ff28acb06abd9f699c9_ProvinceChoice",
+                "query": {
+                  "datasetName": "5dabadda",
+                  "fields": [
+                    {
+                      "name": "ProvinceChoice",
+                      "expression": "`ProvinceChoice`"
+                    },
+                    {
+                      "name": "ProvinceChoice_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_province",
+                "query": {
+                  "datasetName": "5e8416d3",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_province",
+                "query": {
+                  "datasetName": "6f881820",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_province",
+                "query": {
+                  "datasetName": "df49a875",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_province",
+                "query": {
+                  "datasetName": "a6b41161",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_province",
+                "query": {
+                  "datasetName": "87014b8b",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_province",
+                "query": {
+                  "datasetName": "ca432918",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_province",
+                "query": {
+                  "datasetName": "148909a8",
+                  "parameters": [
+                    {
+                      "name": "province",
+                      "keyword": "province"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Province",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "ProvinceChoice",
+                    "queryName": "dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87fa631ff28acb06abd9f699c9_ProvinceChoice"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8458a212bbb2cc8544a75c6a97_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8649291b198ecab6537ffbd894_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd8695e11ae8bc35b44bf247aee2_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86b8f1182583dffb067d5788cd_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd86f6501c4485a78e2622012c6a_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87bb0b1190a28f323ad3ca9fc3_province"
+                  },
+                  {
+                    "parameterName": "province",
+                    "queryName": "parameter_dashboards/01f1cd843c0c1508bb20a2cd793f2d3f/datasets/01f1cd87c80710fe9fe3c4b0c05eb8b9_province"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
