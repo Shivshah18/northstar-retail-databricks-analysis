@@ -12,7 +12,7 @@ The analysis covers monthly trends, category comparisons, shipping economics, re
 
 ## Dashboard preview
 
-![Executive overview showing retail sales and returns metrics](report/images/overview.png)
+![Executive overview showing retail sales and returns metrics](report/images/DB.png)
 
 [View the dashboard PDF](report/Northstar retail sales and returns.pdf)
 
