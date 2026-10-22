@@ -1,0 +1,33 @@
+File,Column,Meaning,Nullable
+customers.csv,CustomerID,Fictional customer primary key or reference,No
+customers.csv,Province,Province code ON BC AB QC,No
+products.csv,ProductID,Product primary key or reference,No
+products.csv,Category,Product class or support issue class by source file,No
+products.csv,UnitPrice,Order snapshot or catalog price in CAD,No
+products.csv,UnitCost,Modeled merchandise unit cost CAD,No
+orders.csv,OrderID,One-line order primary key or reference,No
+orders.csv,OrderDate,Original order date; refund cohort date,No
+orders.csv,CustomerID,Fictional customer primary key or reference,No
+orders.csv,ProductID,Product primary key or reference,No
+orders.csv,Channel,ONLINE or STORE,No
+orders.csv,Quantity,Positive ordered units,No
+orders.csv,UnitPrice,Order snapshot or catalog price in CAD,No
+orders.csv,UnitCost,Modeled merchandise unit cost CAD,No
+orders.csv,Discount,Total order discount CAD not percentage,No
+orders.csv,ShippingRevenue,Customer shipping charge CAD; recognized only if completed,No
+orders.csv,ShippingCost,Modeled fulfillment expense CAD; recognized only if completed,No
+orders.csv,Status,Completed or Canceled,No
+returns.csv,ReturnID,Return event key,No
+returns.csv,OrderID,One-line order primary key or reference,No
+returns.csv,ReturnDate,"Date of return, may be in 2026",No
+returns.csv,ReturnQty,Units returned; at most quantity sold,No
+returns.csv,RefundAmount,Prorated merchandise refund excludes shipping and tax,No
+returns.csv,Reason,Return reason,No
+tickets.csv,TicketID,"Ticket key, multiple tickets may refer to one order",No
+tickets.csv,OrderID,One-line order primary key or reference,No
+tickets.csv,OpenedAt,Ticket creation timestamp,No
+tickets.csv,ClosedAt,Nullable close timestamp; missing means open,Yes
+tickets.csv,Category,Product class or support issue class by source file,No
+tickets.csv,Handoffs,Simulated handoff count,No
+tickets.csv,Reopened,"0 or 1 flag, not event timestamp history",No
+tickets.csv,CSAT,Nullable integer score 1 through 5,Yes

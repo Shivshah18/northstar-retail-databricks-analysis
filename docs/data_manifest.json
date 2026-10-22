@@ -1,0 +1,22 @@
+{
+  "orders.csv": {
+    "sha256": "d53295ae2895e3852ca6829cb2954e2dc944afac8f7d253d4f5e3f92fc2e2fc2",
+    "rows": 10000
+  },
+  "products.csv": {
+    "sha256": "ea8cf427dae0e0c0e6d150cf3eed3cbff924efc0f1b04d58a35fe0ee0cea9c0b",
+    "rows": 30
+  },
+  "returns.csv": {
+    "sha256": "420132a199267461e968af4b4ba8b0fbc4919598c2cb4749f0d4e601f7f7fba4",
+    "rows": 572
+  },
+  "tickets.csv": {
+    "sha256": "6c42c00cc3597479bd55fbcf7ecfab4acfa1251afd6e3df1e66e0ed9157e3687",
+    "rows": 2000
+  },
+  "customers.csv": {
+    "sha256": "197a0fbe794c771a24e8cb7172ce9599bb8c09d846ab1812f82dffb9481dccfc",
+    "rows": 500
+  }
+}

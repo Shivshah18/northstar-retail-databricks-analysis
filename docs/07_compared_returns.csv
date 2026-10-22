@@ -1,0 +1,7 @@
+Category,PriceGroup,CompletedOrders,ReturnedOrders,NetMerchandiseSales,Contribution
+Chair,Discounted,1623,63,1114381.00,429792.06
+Chair,Full price,1649,56,1210910.00,523458.78
+Sofa,Discounted,1598,170,3313989.50,1321891.50
+Sofa,Full price,1518,157,3404600.00,1512760.35
+Table,Discounted,1562,61,1895842.75,747081.75
+Table,Full price,1640,65,2173710.00,956658.75

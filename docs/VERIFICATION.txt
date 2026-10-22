@@ -1,0 +1,5 @@
+CSV controls checked using the original independent Decimal-based checker.
+All financial view calculations, six analytical SELECT queries, quality checks, and seven parameterized dashboard queries were executed in SQLite after replacing catalog qualifiers, Spark month/date syntax, and view DDL with SQLite equivalents. Totals match the original independent CSV controls to the cent.
+This is semantic verification, not a Databricks execution test. read_files, Delta DDL, volumes, warehouse behavior, parameter UI, and dashboard rendering require execution in your own Free Edition workspace. No finished dashboard JSON is supplied.
+UI guidance and official references checked 3 October 2026. Menus may vary.
+Word guide rendered and all 31 pages visually inspected.
